@@ -1,12 +1,7 @@
 <?php
-/**
- * @file
- * Contains \Drupal\bootstrap\Plugin\Preprocess\BootstrapDropdown.
- */
 
 namespace Drupal\bootstrap\Plugin\Preprocess;
 
-use Drupal\bootstrap\Annotation\BootstrapPreprocess;
 use Drupal\bootstrap\Utility\Element;
 use Drupal\bootstrap\Utility\Unicode;
 use Drupal\bootstrap\Utility\Variables;
@@ -91,7 +86,7 @@ class BootstrapDropdown extends PreprocessBase implements PreprocessInterface {
           // Preserve query parameters (if any)
           if (!empty($element['query'])) {
             $url_query = $element['url']->getOption('query') ?: [];
-            $element['url']->setOption('query', NestedArray::mergeDeep($url_query , $element['query']));
+            $element['url']->setOption('query', NestedArray::mergeDeep($url_query, $element['query']));
           }
 
           // Build render array.
@@ -133,17 +128,21 @@ class BootstrapDropdown extends PreprocessBase implements PreprocessInterface {
 
         // Convert into a proper link.
         if (!$child->isType('link')) {
-          // Hide the original element
-          $element = $child->addClass('hidden')->getArrayCopy();
-
-          // Retrieve any set HTML identifier for the link, generating a new
-          // one if necessary.
+          // Retrieve any set HTML identifier for the original element,
+          // generating a new one if necessary. This is needed to ensure events
+          // are bound on the original element (which may be DOM specific).
+          // When the corresponding link below is clicked, it proxies all
+          // events to the "dropdown-target" (the original element).
           $id = $child->getAttribute('id');
           if (!$id) {
             $id = $child->getProperty('id', Html::getUniqueId('dropdown-item'));
             $child->setAttribute('id', $id);
           }
 
+          // Add the original element to the item list, but hide it.
+          $items->{$key . '_original'} = $child->addClass('hidden')->getArrayCopy();
+
+          // Replace the child element with a proper link.
           $child = Element::createStandalone([
             '#type' => 'link',
             '#title' => $child->getProperty('value', $child->getProperty('title', $child->getProperty('text'))),
