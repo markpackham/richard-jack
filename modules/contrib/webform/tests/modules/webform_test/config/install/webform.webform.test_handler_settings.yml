@@ -81,7 +81,6 @@ settings:
   form_reset: false
   form_disable_autocomplete: false
   form_novalidate: false
-  form_required: false
   form_unsaved: false
   form_disable_back: false
   form_submit_back: false
@@ -95,10 +94,6 @@ settings:
   submission_login: false
   submission_login_message: ''
   submission_exception_message: ''
-  submission_locked_message: ''
-  autofill: false
-  autofill_message: ''
-  autofill_excluded_elements: {  }
   wizard_progress_bar: true
   wizard_progress_pages: false
   wizard_progress_percentage: false
@@ -188,12 +183,12 @@ handlers:
           checked: true
     weight: 0
     settings:
+      debug: true
       preview_title: '[webform_submission:values:preview_title]'
       preview_message: '[webform_submission:values:preview_message]'
       confirmation_url: ''
       confirmation_title: ''
       confirmation_message: ''
-      debug: true
   confirmation:
     id: settings
     label: 'Confirmation Settings'
@@ -205,12 +200,12 @@ handlers:
           checked: true
     weight: 0
     settings:
-      preview_title: ''
-      preview_message: ''
-      confirmation_url: ''
       confirmation_title: '[webform_submission:values:confirmation_title]'
       confirmation_message: '[webform_submission:values:confirmation_message]'
       debug: true
+      preview_title: ''
+      preview_message: ''
+      confirmation_url: ''
   custom:
     id: settings
     label: 'Custom settings'
@@ -222,11 +217,11 @@ handlers:
           checked: true
     weight: 0
     settings:
+      debug: true
       preview_title: ''
       preview_message: ''
       confirmation_url: ''
       confirmation_title: ''
       confirmation_message: ''
-      debug: true
       draft_saved_message: '[webform_submission:values:draft_saved_message]'
       draft_loaded_message: '[webform_submission:values:draft_loaded_message]'

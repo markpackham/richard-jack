@@ -58,12 +58,12 @@ class WebformEntityFilterForm extends FormBase {
     ];
     $form['filter']['search'] = [
       '#type' => 'search',
-      '#title' => $this->t('Filter by title, description, elements, user name, or role'),
+      '#title' => $this->t('Filter by title, description, or elements'),
       '#title_display' => 'invisible',
       '#autocomplete_route_name' => 'entity.webform.autocomplete',
-      '#placeholder' => $this->t('Filter by title, description, elements, user name, or role'),
+      '#placeholder' => $this->t('Filter by title, description, or elements'),
       '#maxlength' => 128,
-      '#size' => 45,
+      '#size' => 40,
       '#default_value' => $search,
     ];
     $form['filter']['category'] = [

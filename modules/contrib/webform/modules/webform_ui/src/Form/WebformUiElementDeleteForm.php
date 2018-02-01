@@ -37,7 +37,7 @@ class WebformUiElementDeleteForm extends ConfirmFormBase {
   /**
    * Webform element validator.
    *
-   * @var \Drupal\webform\WebformEntityElementsValidatorInterface
+   * @var \Drupal\webform\WebformEntityElementsValidator
    */
   protected $elementsValidator;
 

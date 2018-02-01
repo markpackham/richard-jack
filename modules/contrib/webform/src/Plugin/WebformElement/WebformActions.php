@@ -58,7 +58,7 @@ class WebformActions extends ContainerBase {
    * {@inheritdoc}
    */
   public function isRoot() {
-    return FALSE;
+    return TRUE;
   }
 
   /**

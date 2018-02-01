@@ -24,8 +24,8 @@ class WebformExcludedElements extends WebformExcludedBase {
     $header['title'] = [
       'data' => t('Title'),
     ];
-    $header['key'] = [
-      'data' => t('Key'),
+    $header['name'] = [
+      'data' => t('Name'),
       'class' => [RESPONSIVE_PRIORITY_LOW],
     ];
     $header['type'] = [
@@ -71,7 +71,7 @@ class WebformExcludedElements extends WebformExcludedBase {
 
       $options[$key] = [
         'title' => $element['#admin_title'] ?:$element['#title'] ?: $key,
-        'key' => $key,
+        'name' => $key,
         'type' => isset($element['#type']) ? $element['#type'] : '',
         'private' => empty($element['#private']) ? t('No') : t('Yes'),
         'access' => $roles ? WebformArrayHelper::toString($roles) : t('All roles'),

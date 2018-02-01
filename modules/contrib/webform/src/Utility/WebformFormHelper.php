@@ -163,7 +163,7 @@ class WebformFormHelper {
   }
 
   /**
-   * Traverse a render array and collect references to all elements in an associative array keyed by element key.
+   * Traverse a render array and collect references to all elements in an associative array keyed by element name.
    *
    * @param array $build
    *   An render array.
@@ -179,7 +179,7 @@ class WebformFormHelper {
   }
 
   /**
-   * Traverse a render array and collect references to all elements in an associative array keyed by element key.
+   * Traverse a render array and collect references to all elements in an associative array keyed by element name.
    *
    * @param array $build
    *   An render array.

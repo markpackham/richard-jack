@@ -31,12 +31,7 @@
           return;
         }
 
-        // Only show element if it's style is not set to 'display: none'.
-        if ($element.attr('style') !== 'display: none;') {
-          $element.show();
-        }
-
-        $element.find('.js-webform-message__link').on('click', function (event) {
+        $element.show().find('.js-webform-message__link').on('click', function (event) {
           $element[effect]();
           setClosed($element, storage, id);
           $element.trigger('close');

@@ -36,7 +36,7 @@ class WebformEntityElementsForm extends BundleEntityFormBase {
   /**
    * Webform element validator.
    *
-   * @var \Drupal\webform\WebformEntityElementsValidatorInterface
+   * @var \Drupal\webform\WebformEntityElementsValidator
    */
   protected $elementsValidator;
 

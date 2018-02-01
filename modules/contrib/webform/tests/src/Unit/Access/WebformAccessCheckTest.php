@@ -76,9 +76,6 @@ class WebformAccessCheckTest extends UnitTestCase {
       ->method('access')
       ->with('submission_update_any')
       ->will($this->returnValue(TRUE));
-    $email_webform->expects($this->any())
-      ->method('hasMessageHandler')
-      ->will($this->returnValue(TRUE));
 
     $webform_submission = $this->getMock('Drupal\webform\WebformSubmissionInterface');
     $webform_submission->expects($this->any())

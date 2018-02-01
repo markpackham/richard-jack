@@ -38,7 +38,6 @@ settings:
   form_reset: false
   form_disable_autocomplete: false
   form_novalidate: false
-  form_required: false
   form_unsaved: false
   form_disable_back: false
   form_submit_back: false
@@ -52,10 +51,6 @@ settings:
   submission_login: false
   submission_login_message: ''
   submission_exception_message: ''
-  submission_locked_message: ''
-  autofill: false
-  autofill_message: ''
-  autofill_excluded_elements: {  }
   wizard_progress_bar: true
   wizard_progress_pages: false
   wizard_progress_percentage: false
@@ -172,7 +167,7 @@ handlers:
     handler_id: email_converted
     status: true
     conditions: {  }
-    weight: 1
+    weight: 0
     settings:
       states:
         - converted
@@ -204,7 +199,7 @@ handlers:
     handler_id: email_completed
     status: true
     conditions: {  }
-    weight: 2
+    weight: 1
     settings:
       states:
         - completed
@@ -236,7 +231,7 @@ handlers:
     handler_id: email_updated
     status: true
     conditions: {  }
-    weight: 3
+    weight: 2
     settings:
       states:
         - updated
@@ -268,7 +263,7 @@ handlers:
     handler_id: email_deleted
     status: true
     conditions: {  }
-    weight: 4
+    weight: 2
     settings:
       states:
         - deleted
@@ -282,37 +277,6 @@ handlers:
       from_options: {  }
       from_name: default
       subject: 'Submission deleted'
-      body: default
-      excluded_elements: {  }
-      ignore_access: false
-      exclude_empty: true
-      html: true
-      attachments: false
-      twig: false
-      debug: true
-      reply_to: ''
-      return_path: ''
-      sender_mail: ''
-      sender_name: ''
-  email_custom:
-    id: email
-    label: 'Submission custom'
-    handler_id: email_custom
-    status: true
-    conditions: {  }
-    weight: 5
-    settings:
-      states: {  }
-      to_mail: custom@example.com
-      to_options: {  }
-      cc_mail: ''
-      cc_options: {  }
-      bcc_mail: ''
-      bcc_options: {  }
-      from_mail: default
-      from_options: {  }
-      from_name: default
-      subject: 'Submission custom'
       body: default
       excluded_elements: {  }
       ignore_access: false

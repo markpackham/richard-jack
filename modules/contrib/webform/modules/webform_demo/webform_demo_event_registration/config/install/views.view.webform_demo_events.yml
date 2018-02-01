@@ -2,6 +2,7 @@ langcode: en
 status: true
 dependencies:
   config:
+    - core.entity_view_mode.node.full
     - node.type.webform_demo_event
     - system.menu.main
   module:
@@ -71,8 +72,7 @@ display:
       row:
         type: 'entity:node'
         options:
-          relationship: none
-          view_mode: default
+          view_mode: full
       fields:
         title:
           id: title

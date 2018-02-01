@@ -5,7 +5,6 @@ namespace Drupal\webform\Element;
 use Drupal\Component\Utility\Xss;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element\FormElement;
-use Drupal\webform\Utility\WebformElementHelper;
 
 /**
  * Provides a webform element for entering HTML using CodeMirror, TextFormat, or custom CKEditor.
@@ -50,10 +49,6 @@ class WebformHtmlEditor extends FormElement {
       ];
     }
     else {
-      // Get value from TextFormat element.
-      if (isset($input['value']['value'])) {
-        $input['value'] = $input['value']['value'];
-      }
       return $input;
     }
   }
@@ -99,7 +94,6 @@ class WebformHtmlEditor extends FormElement {
         '#allowed_formats' => [$format],
         '#value' => empty($element['#value']) ? NULL : $element['#value']['value'],
       ];
-      WebformElementHelper::fixStatesWrapper($element);
       return $element;
     }
 
