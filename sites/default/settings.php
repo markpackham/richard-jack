@@ -40,3 +40,4 @@ if (isset($_SERVER['DEVDESKTOP_DRUPAL_SETTINGS_DIR']) && file_exists($_SERVER['D
   require $_SERVER['DEVDESKTOP_DRUPAL_SETTINGS_DIR'] . '/loc_richard_jack_dd.inc';
 }
 // </DDSETTINGS>
+$settings['install_profile'] = 'standard';
