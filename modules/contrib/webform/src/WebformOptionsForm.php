@@ -33,15 +33,10 @@ class WebformOptionsForm extends EntityForm {
     /** @var \Drupal\webform\WebformOptionsInterface $webform */
     $webform_options = $this->getEntity();
 
-    // Customize title for duplicate and edit operation.
-    switch ($this->operation) {
-      case 'duplicate':
-        $form['#title'] = $this->t("Duplicate '@label' options", ['@label' => $webform_options->label()]);
-        break;
-
-      case 'edit':
-        $form['#title'] = $webform_options->label();
-        break;
+    // Customize title for duplicate webform options.
+    if ($this->operation == 'duplicate') {
+      // Display custom title.
+      $form['#title'] = $this->t("Duplicate '@label' options", ['@label' => $webform_options->label()]);
     }
 
     return parent::buildForm($form, $form_state);
@@ -69,10 +64,7 @@ class WebformOptionsForm extends EntityForm {
       '#type' => 'machine_name',
       '#machine_name' => [
         'exists' => '\Drupal\webform\Entity\WebformOptions::load',
-        'label' => '<br/>' . $this->t('Machine name'),
       ],
-      '#maxlength' => 32,
-      '#field_suffix' => ' (' . $this->t('Maximum @max characters', ['@max' => 32]) . ')',
       '#required' => TRUE,
       '#disabled' => !$webform_options->isNew(),
       '#default_value' => $webform_options->id(),
@@ -164,7 +156,7 @@ class WebformOptionsForm extends EntityForm {
   }
 
   /**
-   * Edit webform options source code form.
+   * Edit webform options source code webform.
    *
    * @param array $form
    *   An associative array containing the structure of the form.
@@ -172,7 +164,7 @@ class WebformOptionsForm extends EntityForm {
    *   The current state of the form.
    *
    * @return array
-   *   The form structure.
+   *   The webform structure.
    */
   protected function editForm(array $form, FormStateInterface $form_state) {
     $form['options'] = [
@@ -183,6 +175,7 @@ class WebformOptionsForm extends EntityForm {
         $this->t("Descriptions, which are only applicable to radios and checkboxes, can be delimited using ' -- '."),
       '#default_value' => Yaml::encode($this->getOptions()),
     ];
+    $form['#attached']['library'][] = 'webform/webform.codemirror.yaml';
     return $form;
   }
 

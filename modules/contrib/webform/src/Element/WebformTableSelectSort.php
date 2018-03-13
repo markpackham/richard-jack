@@ -166,8 +166,12 @@ class WebformTableSelectSort extends Table {
     $value = is_array($element['#value']) ? $element['#value'] : [];
 
     // Add validate callback that extracts the associative array of options.
-    $element += ['#element_validate' => []];
-    array_unshift($element['#element_validate'], [get_called_class(), 'validateWebformTableSelectOrder']);
+    if (isset($element['#element_validate'])) {
+      array_unshift($element['#element_validate'], [get_called_class(), 'validateWebformTableSelectOrder']);
+    }
+    else {
+      $element['#element_validate'][] = [get_called_class(), 'validateWebformTableSelectOrder'];
+    }
 
     $element['#tree'] = TRUE;
 
@@ -274,7 +278,6 @@ class WebformTableSelectSort extends Table {
     $form_state->setValueForElement($element, NULL);
 
     // Now, set the values as the element's value.
-    $element['#value'] = $values;
     $form_state->setValueForElement($element, $values);
   }
 

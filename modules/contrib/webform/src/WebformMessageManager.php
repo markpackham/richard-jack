@@ -153,16 +153,13 @@ class WebformMessageManager implements WebformMessageManagerInterface {
    * {@inheritdoc}
    */
   public function append(array $build, $key, $type = 'status') {
-    $message = $this->build($key);
-    if ($message) {
-      // Append namespace message and allow for multiple messages.
-      $build['webform_message'][] = [
-        '#type' => 'webform_message',
-        '#message_message' => $message,
-        '#message_type' => $type,
-        '#weight' => -100,
-      ];
-    }
+    // Append namespace message and allow for multiple messages.
+    $build['webform_message'][] = [
+      '#type' => 'webform_message',
+      '#message_message' => $this->build($key),
+      '#message_type' => $type,
+      '#weight' => -100,
+    ];
     return $build;
   }
 

@@ -36,12 +36,8 @@ abstract class WebformExcludedBase extends FormElement {
     $options = static::getWebformExcludedOptions($element);
 
     $default_value = array_diff(array_keys($options), array_keys($element['#default_value'] ?: []));
-
     $element['#tree'] = TRUE;
-
-    // Add validate callback.
-    $element += ['#element_validate' => []];
-    array_unshift($element['#element_validate'], [get_called_class(), 'validateWebformExcluded']);
+    $element['#element_validate'] = [[get_called_class(), 'validateWebformExcluded']];
 
     $element['tableselect'] = [
       '#type' => 'tableselect',
@@ -80,10 +76,7 @@ abstract class WebformExcludedBase extends FormElement {
 
     // Unset tableselect and set the element's value to excluded.
     $form_state->setValueForElement($element['tableselect'], NULL);
-
-    $value = array_combine($excluded, $excluded);
-    $element['#value'] = $value;
-    $form_state->setValueForElement($element, $value);
+    $form_state->setValueForElement($element, array_combine($excluded, $excluded));
   }
 
   /**

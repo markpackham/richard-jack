@@ -5,6 +5,7 @@ dependencies:
     - node.type.webform_demo_event
     - system.menu.main
   module:
+    - datetime
     - node
     - user
 id: webform_demo_events

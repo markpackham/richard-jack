@@ -41,7 +41,6 @@ elements: |
       '#postal_code__access': true
       '#locality__access': true
       '#sublocality__access': true
-      '#subpremise__access': true
       '#administrative_area_level_1__access': true
       '#country__access': true
       '#country_short__access': true
@@ -64,7 +63,6 @@ elements: |
       '#postal_code__access': true
       '#locality__access': true
       '#sublocality__access': true
-      '#subpremise__access': true
       '#administrative_area_level_1__access': true
       '#country__access': true
       '#country_short__access': true
@@ -83,7 +81,6 @@ elements: |
       '#postal_code__access': true
       '#locality__access': true
       '#sublocality__access': true
-      '#subpremise__access': true
       '#administrative_area_level_1__access': true
       '#country__access': true
       '#country_short__access': true
@@ -115,7 +112,6 @@ settings:
   form_reset: false
   form_disable_autocomplete: false
   form_novalidate: false
-  form_disable_inline_errors: false
   form_required: false
   form_unsaved: false
   form_disable_back: false
@@ -215,7 +211,7 @@ access:
     roles: {  }
     users: {  }
     permissions: {  }
-  test:
+  administer:
     roles: {  }
     users: {  }
     permissions: {  }

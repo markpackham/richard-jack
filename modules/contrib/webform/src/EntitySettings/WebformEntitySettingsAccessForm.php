@@ -27,7 +27,6 @@ class WebformEntitySettingsAccessForm extends WebformEntitySettingsBaseForm {
       'update_own' => $this->t('Update own webform submissions'),
       'delete_own' => $this->t('Delete own webform submissions'),
       'administer' => $this->t('Administer webform &amp; submissions'),
-      'test' => $this->t('Test webform'),
     ];
 
     $form['access']['#tree'] = TRUE;
@@ -57,7 +56,7 @@ class WebformEntitySettingsAccessForm extends WebformEntitySettingsBaseForm {
       ];
     }
 
-    $form['access']['administer']['message'] = [
+    $form['access'][$name]['message'] = [
       '#weight' => -10,
       '#type' => 'webform_message',
       '#message_type' => 'warning',

@@ -15,6 +15,7 @@ use Drupal\webform\WebformSubmissionInterface;
  *   label = @Translation("Flexbox layout"),
  *   description = @Translation("Provides a flex(ible) box container used to layout elements in multiple columns."),
  *   category = @Translation("Containers"),
+ *   states_wrapper = TRUE,
  * )
  */
 class WebformFlexbox extends Container {

@@ -39,7 +39,6 @@ settings:
   form_reset: false
   form_disable_autocomplete: false
   form_novalidate: true
-  form_disable_inline_errors: false
   form_required: false
   form_unsaved: false
   form_disable_back: false
@@ -139,7 +138,7 @@ access:
     roles: {  }
     users: {  }
     permissions: {  }
-  test:
+  administer:
     roles: {  }
     users: {  }
     permissions: {  }

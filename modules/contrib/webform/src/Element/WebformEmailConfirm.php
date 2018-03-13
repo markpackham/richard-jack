@@ -34,6 +34,7 @@ class WebformEmailConfirm extends FormElement {
       '#pre_render' => [
         [$class, 'preRenderCompositeFormElement'],
       ],
+      '#element_validate' => [[$class, 'validateWebformEmailConfirm']],
       '#theme_wrappers' => ['form_element'],
       '#required' => FALSE,
     ];
@@ -107,11 +108,6 @@ class WebformEmailConfirm extends FormElement {
     unset($element['#maxlength']);
     unset($element['#attributes']);
     unset($element['#description']);
-
-    // Add validate callback.
-    $element += ['#element_validate' => []];
-    array_unshift($element['#element_validate'], [get_called_class(), 'validateWebformEmailConfirm']);
-
     return $element;
   }
 
@@ -156,8 +152,6 @@ class WebformEmailConfirm extends FormElement {
     // string regardless of validation results.
     $form_state->setValueForElement($element['mail_1'], NULL);
     $form_state->setValueForElement($element['mail_2'], NULL);
-
-    $element['#value'] = $mail_1;
     $form_state->setValueForElement($element, $mail_1);
   }
 

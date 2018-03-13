@@ -108,6 +108,12 @@ elements: |
         two: Two
         three: Three
       '#icheck': minimal
+    password:
+      '#type': password
+      '#title': Password
+    password_confirm:
+      '#type': password_confirm
+      '#title': 'Password confirm'
   date_elements:
     '#type': details
     '#title': 'Date elements'
@@ -574,7 +580,6 @@ settings:
   form_reset: false
   form_disable_autocomplete: false
   form_novalidate: false
-  form_disable_inline_errors: false
   form_required: true
   form_unsaved: false
   form_disable_back: false
@@ -674,7 +679,7 @@ access:
     roles: {  }
     users: {  }
     permissions: {  }
-  test:
+  administer:
     roles: {  }
     users: {  }
     permissions: {  }

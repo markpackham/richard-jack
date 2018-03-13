@@ -87,7 +87,7 @@ abstract class WebformComputedBase extends FormElement {
       $element['#type'] = 'item';
     }
 
-    if (!empty($element['#states'])) {
+    if (isset($element['#states'])) {
       webform_process_states($element, '#wrapper_attributes');
     }
 

@@ -74,8 +74,7 @@ class WebformElementStates extends FormElement {
     $element['#tree'] = TRUE;
 
     // Add validate callback that extracts the associative array of states.
-    $element += ['#element_validate' => []];
-    array_unshift($element['#element_validate'], [get_called_class(), 'validateWebformElementStates']);
+    $element['#element_validate'] = [[get_called_class(), 'validateWebformElementStates']];
 
     // For customized #states display a CodeMirror YAML editor.
     if ($warning_message = static::isDefaultValueCustomizedFormApiStates($element)) {
@@ -307,7 +306,7 @@ class WebformElementStates extends FormElement {
     ];
     $row['condition']['pattern'] = [
       '#type' => 'container',
-      'description' => ['#markup' => t('Enter a <a href=":href">regular expression</a>', [':href' => 'http://www.w3schools.com/js/js_regexp.asp'])],
+      'description' => ['#markup' => t('Enter a <a href=":href">regular expression</a>')],
       '#states' => [
         'visible' => [
           [$trigger_selector => ['value' => 'pattern']],
@@ -500,8 +499,6 @@ class WebformElementStates extends FormElement {
       $states = static::convertFormValuesToFormApiStates($element['states']['#value']);
     }
     $form_state->setValueForElement($element, NULL);
-
-    $element['#value'] = $states;
     $form_state->setValueForElement($element, $states);
   }
 
@@ -602,12 +599,8 @@ class WebformElementStates extends FormElement {
         continue;
       }
 
-      // Define values extracted from
-      // WebformElementStates::getFormApiStatesCondition().
       $selector = NULL;
       $trigger = NULL;
-      $value = NULL;
-
       $operator = $state_array['operator'];
       $conditions = $state_array['conditions'];
       if (count($conditions) === 1) {

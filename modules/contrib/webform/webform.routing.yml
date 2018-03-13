@@ -75,30 +75,23 @@ webform.addons:
   requirements:
     _permission: 'administer webform'
 
-# Contribute
+# About
 
-webform.contribute:
-  path: '/admin/structure/webform/contribute'
+webform.about:
+  path: '/admin/structure/webform/about'
   defaults:
-    _controller: '\Drupal\webform\Controller\WebformContributeController::index'
-    _title: 'Webforms: Contribute'
+    _controller: '\Drupal\webform\Controller\WebformAboutController::webform'
+    _title: 'Webforms: About Webform'
   requirements:
-    _permission: 'administer webform'
+    _permission: 'access webform overview'
 
-webform.contribute.settings:
-  path: '/admin/structure/webform/contribute/configure'
+webform.about.drupal:
+  path: '/admin/structure/webform/about/drupal'
   defaults:
-    _form: '\Drupal\webform\Form\WebformContributeForm'
-    _title: 'Configure Community Information'
+    _controller: '\Drupal\webform\Controller\WebformAboutController::drupal'
+    _title: 'Webforms: About Drupal'
   requirements:
-    _permission: 'administer webform'
-
-webform.contribute.autocomplete:
-  path: '/admin/structure/webform/contribute/autocomplete/{account_type}'
-  defaults:
-    _controller: '\Drupal\webform\Controller\WebformContributeController::autocomplete'
-  requirements:
-    _permission: 'administer webform'
+    _permission: 'access webform overview'
 
 # Forms
 
@@ -206,7 +199,7 @@ entity.webform.test_form:
       webform:
         type: 'entity:webform'
   requirements:
-    _entity_access: 'webform.test'
+    _entity_access: 'webform.update'
 
 entity.webform.add_form:
   path: '/admin/structure/webform/add'
@@ -407,7 +400,7 @@ entity.webform_options.edit_form:
   path: '/admin/structure/webform/config/options/manage/{webform_options}/edit'
   defaults:
     _entity_form: 'webform_options.edit'
-    _title: 'Edit webform options'
+    _title_callback: '\Drupal\webform\Controller\WebformOptionsController::title'
   requirements:
     _entity_access: 'webform_options.update'
 
@@ -559,7 +552,7 @@ entity.webform_submission.locked_toggle:
   defaults:
     _controller: '\Drupal\webform\Controller\WebformSubmissionController::locked'
   requirements:
-    _entity_access: 'webform_submission.update'
+    _entity_access: 'webform_submission.notes'
     _csrf_token: 'TRUE'
 
 entity.webform_submission.sticky_toggle:
@@ -567,7 +560,7 @@ entity.webform_submission.sticky_toggle:
   defaults:
     _controller: '\Drupal\webform\Controller\WebformSubmissionController::sticky'
   requirements:
-    _entity_access: 'webform_submission.update'
+    _entity_access: 'webform_submission.notes'
     _csrf_token: 'TRUE'
 
 webform_submission.multiple_delete_confirm:

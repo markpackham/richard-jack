@@ -64,6 +64,10 @@ class Date extends DateBase {
     // @see \Drupal\Core\Render\Element\Date::getInfo
     $element['#attributes']['type'] = 'date';
 
+    // Issue #2817693: Min date option not working with jQuery UI
+    // datepicker.
+    $element['#attached']['library'][] = 'webform/webform.element.date';
+
     // Convert date element into textfield with date picker.
     if (!empty($element['#datepicker'])) {
       $element['#attributes']['type'] = 'text';
@@ -97,6 +101,13 @@ class Date extends DateBase {
       $format = (isset($element['#date_date_format'])) ? $element['#date_date_format'] : $this->getDefaultProperty('date_date_format');
     }
     return $format;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getItemDefaultFormat() {
+    return 'fallback';
   }
 
   /**

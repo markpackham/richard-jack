@@ -96,7 +96,7 @@ abstract class WebformOtherBase extends FormElement {
 
     if (!empty($element['#required'])) {
       $element['#wrapper_attributes']['required'] = 'required';
-      $element['#wrapper_attributes']['aria-required'] = 'true';
+      $element['#wrapper_attributes']['aria-required'] = 'aria-required';
     }
 
     $element[$type]['#type'] = static::$type;
@@ -145,9 +145,13 @@ abstract class WebformOtherBase extends FormElement {
     // Remove options.
     unset($element['#options']);
 
-    // Add validate callback.
-    $element += ['#element_validate' => []];
-    array_unshift($element['#element_validate'], [get_called_class(), 'validateWebformOther']);
+    // Set validation.
+    if (isset($element['#element_validate'])) {
+      $element['#element_validate'] = array_merge([[get_called_class(), 'validateWebformOther']], $element['#element_validate']);
+    }
+    else {
+      $element['#element_validate'] = [[get_called_class(), 'validateWebformOther']];
+    }
 
     // Attach library.
     $element['#attached']['library'][] = 'webform/webform.element.other';
@@ -218,8 +222,6 @@ abstract class WebformOtherBase extends FormElement {
 
     $form_state->setValueForElement($element[$type], NULL);
     $form_state->setValueForElement($element['other'], NULL);
-
-    $element['#value'] = $return_value;
     $form_state->setValueForElement($element, $return_value);
   }
 

@@ -123,11 +123,9 @@ class WebformMapping extends FormElement {
     ];
     $element['table'] += array_intersect_key($element, array_combine($properties, $properties));
 
-    // Add validate callback.
-    $element += ['#element_validate' => []];
-    array_unshift($element['#element_validate'], [get_called_class(), 'validateWebformMapping']);
+    $element['#element_validate'] = [[get_called_class(), 'validateWebformMapping']];
 
-    if (!empty($element['#states'])) {
+    if (isset($element['#states'])) {
       webform_process_states($element, '#wrapper_attributes');
     }
 
@@ -148,7 +146,6 @@ class WebformMapping extends FormElement {
       WebformElementHelper::setRequiredError($element, $form_state);
     }
 
-    $element['#value'] = $value;
     $form_state->setValueForElement($element, $value);
   }
 

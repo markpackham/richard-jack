@@ -22,12 +22,15 @@ class WebformHtmlEditor extends FormElement {
     return [
       '#input' => TRUE,
       '#process' => [
-        [$class, 'processWebformHtmlEditor'],
         [$class, 'processAjaxForm'],
         [$class, 'processGroup'],
+        [$class, 'preRenderWebformHtmlEditor'],
       ],
       '#pre_render' => [
         [$class, 'preRenderGroup'],
+      ],
+      '#element_validate' => [
+        [$class, 'validateWebformHtmlEditor'],
       ],
       '#theme_wrappers' => ['form_element'],
       '#format' => '',
@@ -63,7 +66,7 @@ class WebformHtmlEditor extends FormElement {
    *   The HTML Editor which can be a CodeMirror element, TextFormat, or
    *   Textarea which is transformed into a custom HTML Editor.
    */
-  public static function processWebformHtmlEditor(array $element) {
+  public static function preRenderWebformHtmlEditor(array $element) {
     $element['#tree'] = TRUE;
 
     // Define value element.
@@ -78,16 +81,9 @@ class WebformHtmlEditor extends FormElement {
       $element['value']['#required'] = $element['#required'];
     }
 
-    // Don't display inline form error messages.
-    $element['#error_no_message'] = TRUE;
-
     // Set value element default value.
     $element['value']['#default_value'] = $element['#default_value'];
 
-    // Add validate callback.
-    $element += ['#element_validate' => []];
-    array_unshift($element['#element_validate'], [get_called_class(), 'validateWebformHtmlEditor']);
-    
     // If HTML disabled and no #format is specified return simple CodeMirror
     // HTML editor.
     $disabled = \Drupal::config('webform.settings')->get('html_editor.disabled') ?: ($element['#format'] === FALSE);
@@ -146,7 +142,7 @@ class WebformHtmlEditor extends FormElement {
       $element['#attached']['drupalSettings']['webform']['html_editor']['ImceImageIcon'] = file_create_url(drupal_get_path('module', 'imce') . '/js/plugins/ckeditor/icons/imceimage.png');
     }
 
-    if (!empty($element['#states'])) {
+    if (isset($element['#states'])) {
       webform_process_states($element, '#wrapper_attributes');
     }
 
@@ -160,14 +156,11 @@ class WebformHtmlEditor extends FormElement {
     $value = $element['#value']['value'];
     if (is_array($value)) {
       // Get value from TextFormat element.
-      $value = $value['value'];
+      $form_state->setValueForElement($element, $value['value']);
     }
     else {
-      $value = trim($value);
+      $form_state->setValueForElement($element, trim($value));
     }
-
-    $element['#value'] = $value;
-    $form_state->setValueForElement($element, $value);
   }
 
   /**

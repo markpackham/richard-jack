@@ -638,7 +638,7 @@ class WebformUiEntityElementsForm extends BundleEntityFormBase {
       $row['flex'] = ['#markup' => 1];
     }
     if ($webform->hasConditions()) {
-      $row['conditions'] = ['#markup' => ''];
+      $row['flex'] = ['#markup' => ''];
     }
     $row['required'] = ['#markup' => ''];
     $row['weight'] = ['#markup' => ''];

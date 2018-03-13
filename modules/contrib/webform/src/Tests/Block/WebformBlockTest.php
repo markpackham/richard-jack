@@ -30,11 +30,11 @@ class WebformBlockTest extends WebformTestBase {
    */
   public function testBlock() {
     // Place block.
-    $block = $this->drupalPlaceBlock('webform_block', [
-      'webform_id' => 'contact',
-    ]);
+    $block = $this->drupalPlaceBlock('webform_block');
 
     // Check contact webform.
+    $block->getPlugin()->setConfigurationValue('webform_id', 'contact');
+    $block->save();
     $this->drupalGet('<front>');
     $this->assertRaw('webform-submission-contact-add-form');
 

@@ -19,7 +19,7 @@ class WebformElementFormatTest extends WebformElementTestBase {
    *
    * @var array
    */
-  public static $modules = ['node', 'taxonomy', 'webform', 'webform_image_select'];
+  public static $modules = ['node', 'taxonomy', 'webform'];
 
   /**
    * Webforms to load.

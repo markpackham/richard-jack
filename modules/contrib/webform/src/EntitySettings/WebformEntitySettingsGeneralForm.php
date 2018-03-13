@@ -272,26 +272,25 @@ class WebformEntitySettingsGeneralForm extends WebformEntitySettingsBaseForm {
       '#default_value' => $settings['ajax_scroll_top'],
     ];
 
-    if ($this->currentUser()->hasPermission('administer webform')) {
-      // Author information.
-      $form['author_information'] = [
-        '#type' => 'details',
-        '#title' => $this->t('Author information'),
-      ];
-      $form['author_information']['uid'] = [
-        '#type' => 'entity_autocomplete',
-        '#title' => $this->t('Authored by'),
-        '#description' => $this->t("The username of the webform author/owner."),
-        '#target_type' => 'user',
-        '#settings' => [
-          'match_operator' => 'CONTAINS',
-        ],
-        '#selection_settings' => [
-          'include_anonymous' => TRUE,
-        ],
-        '#default_value' => $webform->getOwner(),
-      ];
-    }
+    // Author information.
+    $form['author_information'] = [
+      '#type' => 'details',
+      '#title' => $this->t('Author information'),
+      '#access' => $this->currentUser()->hasPermission('administer webform'),
+    ];
+    $form['author_information']['uid'] = [
+      '#type' => 'entity_autocomplete',
+      '#title' => $this->t('Authored by'),
+      '#description' => $this->t("The username of the webform author/owner."),
+      '#target_type' => 'user',
+      '#settings' => [
+        'match_operator' => 'CONTAINS',
+      ],
+      '#selection_settings' => [
+        'include_anonymous' => TRUE,
+      ],
+      '#default_value' => $webform->getOwner(),
+    ];
 
     // Third party settings.
     $form['third_party_settings'] = [

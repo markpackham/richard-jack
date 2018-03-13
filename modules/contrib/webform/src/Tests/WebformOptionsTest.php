@@ -65,7 +65,7 @@ class WebformOptionsTest extends WebformTestBase {
     /** @var \Drupal\webform\WebformOptionsInterface $webform_options */
     $webform_options = WebformOptions::create([
       'langcode' => 'en',
-      'status' => TRUE,
+      'status' => WebformInterface::STATUS_OPEN,
       'id' => 'test_flag',
       'title' => 'Test flag',
       'options' => Yaml::encode($color_options),
@@ -116,18 +116,10 @@ class WebformOptionsTest extends WebformTestBase {
     $options = WebformOptions::getElementOptions($element);
     $this->assertEqual(reset($options), 'Switzerland');
 
-    // Check admin user access denied.
-    $this->drupalGet('admin/structure/webform/config/options/manage');
-    $this->assertResponse(403);
-    $this->drupalGet('admin/structure/webform/config/options/manage/add');
-    $this->assertResponse(403);
-
-    // Check admin user access.
+    // Make sure we can reach the option admin pages.
     $this->drupalLogin($this->adminWebformUser);
     $this->drupalGet('admin/structure/webform/config/options/manage');
-    $this->assertResponse(200);
     $this->drupalGet('admin/structure/webform/config/options/manage/add');
-    $this->assertResponse(200);
   }
 
 }

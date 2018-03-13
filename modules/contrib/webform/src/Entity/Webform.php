@@ -3,8 +3,6 @@
 namespace Drupal\webform\Entity;
 
 use Drupal\Component\Utility\NestedArray;
-use Drupal\Core\Access\AccessResult;
-use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Config\Entity\ConfigEntityInterface;
 use Drupal\Core\Serialization\Yaml;
 use Drupal\Core\Config\Entity\ConfigEntityBundleBase;
@@ -370,7 +368,7 @@ class Webform extends ConfigEntityBundleBase implements WebformInterface {
    * @var bool
    */
   protected $hasMessagehandler;
-
+  
   /**
    * {@inheritdoc}
    */
@@ -838,7 +836,6 @@ class Webform extends ConfigEntityBundleBase implements WebformInterface {
       'form_reset' => FALSE,
       'form_disable_autocomplete' => FALSE,
       'form_novalidate' => FALSE,
-      'form_disable_inline_errors' => FALSE,
       'form_required' => FALSE,
       'form_unsaved' => FALSE,
       'form_disable_back' => FALSE,
@@ -955,11 +952,6 @@ class Webform extends ConfigEntityBundleBase implements WebformInterface {
         'users' => [],
         'permissions' => [],
       ],
-      'test' => [
-        'roles' => [],
-        'users' => [],
-        'permissions' => [],
-      ],
     ];
   }
 
@@ -969,12 +961,12 @@ class Webform extends ConfigEntityBundleBase implements WebformInterface {
   public function checkAccessRules($operation, AccountInterface $account, WebformSubmissionInterface $webform_submission = NULL) {
     // Always grant access to user that can administer webforms.
     if ($account->hasPermission('administer webform')) {
-      return AccessResult::allowed()->cachePerPermissions();
+      return TRUE;
     }
 
     // Grant user with administer webform submission access to view all webform submissions.
     if ($account->hasPermission('administer webform submission') && $operation != 'administer') {
-      return AccessResult::allowed()->cachePerPermissions();
+      return TRUE;
     }
 
     // The "page" operation is the same as "create" but requires that the
@@ -982,7 +974,7 @@ class Webform extends ConfigEntityBundleBase implements WebformInterface {
     // Used by the 'entity.webform.canonical' route.
     if ($operation == 'page') {
       if (empty($this->settings['page'])) {
-        return AccessResult::forbidden()->addCacheableDependency($this);
+        return FALSE;
       }
       else {
         $operation = 'create';
@@ -991,30 +983,19 @@ class Webform extends ConfigEntityBundleBase implements WebformInterface {
 
     $access_rules = $this->getAccessRules() + static::getDefaultAccessRules();
 
-    $cacheability = new CacheableMetadata();
-    $cacheability->addCacheableDependency($this);
-    $cacheability->addCacheContexts(['user.permissions']);
-    foreach ($access_rules as $access_rule) {
-      // If there is some per-user access logic, our response must be cacheable
-      // accordingly.
-      if (!empty($access_rule['users'])) {
-        $cacheability->addCacheContexts(['user']);
-      }
-    }
-
     // Check administer access rule and grant full access to user.
     if ($this->checkAccessRule($access_rules['administer'], $account)) {
-      return AccessResult::allowed()->addCacheableDependency($cacheability);
+      return TRUE;
     }
 
     // Check operation specific access rules.
-    if (in_array($operation, ['create', 'view_any', 'update_any', 'delete_any', 'purge_any', 'administer', 'test'])
+    if (in_array($operation, ['create', 'view_any', 'update_any', 'delete_any', 'purge_any', 'administer'])
       && $this->checkAccessRule($access_rules[$operation], $account)) {
-      return AccessResult::allowed()->addCacheableDependency($cacheability);
+      return TRUE;
     }
     if (isset($access_rules[$operation . '_any'])
       && $this->checkAccessRule($access_rules[$operation . '_any'], $account)) {
-      return AccessResult::allowed()->addCacheableDependency($cacheability);
+      return TRUE;
     }
 
     // If webform submission is not set then check 'view own'.
@@ -1022,7 +1003,7 @@ class Webform extends ConfigEntityBundleBase implements WebformInterface {
     if (empty($webform_submission)
       && $operation === 'view_own'
       && $this->checkAccessRule($access_rules[$operation], $account)) {
-      return AccessResult::allowed()->addCacheableDependency($cacheability);
+      return TRUE;
     }
 
     // If webform submission is set then check the webform submission owner.
@@ -1033,12 +1014,12 @@ class Webform extends ConfigEntityBundleBase implements WebformInterface {
       if ($is_owner) {
         if (isset($access_rules[$operation . '_own'])
           && $this->checkAccessRule($access_rules[$operation . '_own'], $account)) {
-          return AccessResult::allowed()->cachePerUser()->addCacheableDependency($cacheability);
+          return TRUE;
         }
       }
     }
 
-    return AccessResult::forbidden()->addCacheableDependency($cacheability);
+    return FALSE;
   }
 
   /**
@@ -1487,9 +1468,8 @@ class Webform extends ConfigEntityBundleBase implements WebformInterface {
     $elements = $this->getElementsDecoded();
     // If element is was not added to elements, add it as the last element.
     if (!$this->setElementPropertiesRecursive($elements, $key, $properties, $parent_key)) {
-      if ($this->hasActions() && array_key_exists(end($this->elementsActions), $elements)) {
-        // Add element before the last 'webform_actions' element if action is
-        // not placed into container.
+      if ($this->hasActions()) {
+        // Add element before the last 'webform_actions' element.
         $last_action_key = end($this->elementsActions);
         $updated_elements = [];
         foreach ($elements as $element_key => $element) {
@@ -1904,7 +1884,7 @@ class Webform extends ConfigEntityBundleBase implements WebformInterface {
    * {@inheritdoc}
    */
   public function updatePaths() {
-    // Path module must be enabled for URL aliases to be updated.
+    // Path module must be enable for URL aliases to be updated.
     if (!\Drupal::moduleHandler()->moduleExists('path')) {
       return;
     }

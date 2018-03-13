@@ -98,20 +98,20 @@ class WebformOptionsHelper {
    * @param array $options
    *   An associative array of options with TranslatableMarkup.
    *
-   * @return array
+   * @return string
    *   An associative array of options of strings,
    */
   public static function convertOptionsToString(array $options) {
-    $strings = [];
+    $string = [];
     foreach ($options as $option_value => $option_text) {
       if (is_array($option_text)) {
-        $strings[(string) $option_value] = self::convertOptionsToString($option_text);
+        $string[(string) $option_value] = self::convertOptionsToString($option_text);
       }
       else {
-        $strings[(string) $option_value] = (string) $option_text;
+        $string[(string) $option_value] = (string) $option_text;
       }
     }
-    return $strings;
+    return $string;
   }
 
   /**
@@ -122,7 +122,7 @@ class WebformOptionsHelper {
    * @param array $options
    *   An associative array of options.
    *
-   * @return array
+   * @return string
    *   An associative array of options with HTML entities decoded.
    */
   public static function decodeOptions(array $options) {
