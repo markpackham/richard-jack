@@ -14,6 +14,10 @@ img {
     padding: 7px;
 }
 
+th {
+    padding: 6px;
+}
+
 p, .geolocation-formatter-map-wrapper {
     padding: 3px;
 }
