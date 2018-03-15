@@ -7,8 +7,8 @@ dependencies:
   - 'webform:webform'
   - 'webform:webform_scheduled_email'
 
-# Information added by Drupal.org packaging script on 2018-03-13
-version: '8.x-5.0-rc4'
+# Information added by Drupal.org packaging script on 2018-03-14
+version: '8.x-5.0-rc5'
 core: '8.x'
 project: 'webform'
-datestamp: 1520964794
+datestamp: 1521041292
