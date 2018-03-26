@@ -193,7 +193,7 @@ class ViewsAccordion extends StylePluginBase {
     ];
     $show_if_use_header_icons = [
       'visible' => [
-        ':input[name="style_options[use_header_icons]"]' => array('checked' => TRUE),
+        ':input[name="style_options[use_header_icons]"]' => ['checked' => TRUE],
       ],
     ];
     $form['icon_header'] = [
@@ -331,7 +331,7 @@ class ViewsAccordion extends StylePluginBase {
       // @TODO handle multiple grouping.
       break;
     }
-    if ($this->options['collapsible'] !== 1 && $this->options['row-start-open'] == 'none') {
+    if ($this->options['collapsible'] !== 1 && $this->options['row-start-open'] === 'none') {
       $errors[] = $this->t('Setting "Row to display opened on start" to "None" requires "Collapsible" to be enabled.');
     }
     return $errors;
