@@ -19,6 +19,7 @@ use Drupal\webform\Plugin\WebformHandler\RemotePostWebformHandler;
 use Drupal\webform\Utility\WebformArrayHelper;
 use Drupal\webform\Utility\WebformOptionsHelper;
 use Drupal\webform\Utility\WebformReflectionHelper;
+use Drupal\webform\Utility\WebformYaml;
 
 /******************************************************************************/
 // Webform-8.x-5.0-beta1 - December 7, 2016 (No update required).
@@ -2059,7 +2060,7 @@ function webform_update_8111() {
 }
 
 /**
- * Provide dedicated 'test' webform operation and access rule.
+ * Issue #2951368: Provide dedicated 'test' webform operation and access rule.
  */
 function webform_update_8112() {
   $config_factory = \Drupal::configFactory();
@@ -2127,3 +2128,27 @@ function webform_update_8114() {
 function webform_update_8115() {
   _webform_update_webform_settings();
 }
+
+/**
+ * #multiple__label and #multiple__labels are being saved with every element.
+ */
+function webform_update_8116() {
+  _webform_update_elements_clear_properties([
+    '#multiple__label' => '',
+    '#multiple__labels' => '',
+  ]);
+}
+
+/**
+ * Issue #2957192: Add postal_code to test data
+ */
+function webform_update_8117() {
+  $config = \Drupal::configFactory()->getEditable('webform.settings');
+  $names = Yaml::decode($config->get('test.names'));
+  $names += [
+    'postal_code' => ['11111', '12345', '12345-6789']
+  ];
+  $config->set('test.names', WebformYaml::tidy(Yaml::encode($names)));
+  $config->save();
+}
+
