@@ -3,6 +3,7 @@
 namespace Drupal\easy_breadcrumb;
 
 use Drupal\Component\Utility\Unicode;
+use Drupal\Component\Utility\Xss;
 use Drupal\Core\Access\AccessManagerInterface;
 use Drupal\Core\Breadcrumb\Breadcrumb;
 use Drupal\Core\Breadcrumb\BreadcrumbBuilderInterface;
@@ -17,6 +18,7 @@ use Drupal\Core\Routing\RouteMatch;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\Url;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -141,9 +143,18 @@ class EasyBreadcrumbBuilder implements BreadcrumbBuilderInterface {
    */
   public function build(RouteMatchInterface $route_match) {
     $breadcrumb = new Breadcrumb();
-    $links = array();
-    $exclude = array();
+    $links = [];
+    $exclude = [];
     $curr_lang = \Drupal::languageManager()->getCurrentLanguage()->getId();
+    $replacedTitles = [];
+    $mapValues = preg_split('/[\r\n]+/', $this->config->get(EasyBreadcrumbConstants::REPLACED_TITLES));
+
+    foreach ($mapValues as $mapValue) {
+      $values = explode("::", $mapValue);
+      if (count($values) == 2) {
+        $replacedTitles[$values[0]] = $values[1];
+      }
+    }
 
     // General path-based breadcrumbs. Use the actual request path, prior to
     // resolving path aliases, so the breadcrumb can be defined by simply
@@ -152,7 +163,12 @@ class EasyBreadcrumbBuilder implements BreadcrumbBuilderInterface {
     $path = urldecode($path);
     $path_elements = explode('/', $path);
     $front = $this->siteConfig->get('page.front');
-    $exclude[$front] = TRUE;
+
+    // Give the option to keep the breadcrumb on the front page.
+    $keep_front = !empty($this->config->get(EasyBreadcrumbConstants::HOME_SEGMENT_TITLE))
+                  && $this->config->get(EasyBreadcrumbConstants::HOME_SEGMENT_KEEP);
+    $exclude[$front] = !$keep_front;
+    $exclude[''] = !$keep_front;
     $exclude['/user'] = TRUE;
 
     // Because this breadcrumb builder is path and config based, vary cache
@@ -160,6 +176,7 @@ class EasyBreadcrumbBuilder implements BreadcrumbBuilderInterface {
     $breadcrumb->addCacheContexts(['url.path']);
     $breadcrumb->addCacheableDependency($this->config);
     $i = 0;
+    $add_langcode = FALSE;
 
     // Remove the current page if it's not wanted.
     if (!$this->config->get(EasyBreadcrumbConstants::INCLUDE_TITLE_SEGMENT)) {
@@ -172,13 +189,18 @@ class EasyBreadcrumbBuilder implements BreadcrumbBuilderInterface {
       if (!($this->config->get(EasyBreadcrumbConstants::LANGUAGE_PATH_PREFIX_AS_SEGMENT))) {
         if (Unicode::strtolower($path_elements[0]) == $curr_lang) {
           array_shift($path_elements);
+          $add_langcode = TRUE;
         }
       }
     }
     while (count($path_elements) > 0) {
+      $check_path = '/' . implode('/', $path_elements);
+      if ($add_langcode) {
+        $check_path = '/' . $curr_lang . $check_path;
+      }
 
       // Copy the path elements for up-casting.
-      $route_request = $this->getRequestForPath('/' . implode('/', $path_elements), $exclude);
+      $route_request = $this->getRequestForPath($check_path, $exclude);
       if ($this->config->get(EasyBreadcrumbConstants::EXCLUDED_PATHS)) {
         $config_textarea = $this->config->get(EasyBreadcrumbConstants::EXCLUDED_PATHS);
         $excludes = preg_split('/[\r\n]+/', $config_textarea, -1, PREG_SPLIT_NO_EMPTY);
@@ -190,11 +212,36 @@ class EasyBreadcrumbBuilder implements BreadcrumbBuilderInterface {
       if ($route_request) {
         $route_match = RouteMatch::createFromRequest($route_request);
         $access = $this->accessManager->check($route_match, $this->currentUser, NULL, TRUE);
+        $breadcrumb = $breadcrumb->addCacheableDependency($access);
         // The set of breadcrumb links depends on the access result, so merge
         // the access result's cacheability metadata.
         if ($access->isAllowed()) {
           if ($this->config->get(EasyBreadcrumbConstants::TITLE_FROM_PAGE_WHEN_AVAILABLE)) {
             $title = $this->titleResolver->getTitle($route_request, $route_match->getRouteObject());
+            $this->applyTitleReplacement($title, $replacedTitles);
+            // Many paths return a translatable markup object.
+            if ($title instanceof TranslatableMarkup) {
+              // Sets the title to the translated string.
+              $title = $title->render();
+            }
+            // Other paths, such as admin/structure/menu/manage/main, will
+            // return a render array suitable to render using core's XSS filter.
+            elseif (is_array($title) && array_key_exists('#markup', $title) && array_key_exists('#allowed_tags', $title)) {
+              // Sets the title to the XSS filtered string.
+              $title = Xss::filter($title['#markup'], $title['#allowed_tags']);
+            }
+
+            // If a module declares the title in an unexpected way...
+            if (!is_string($title)) {
+              // Logs a watchdog notice.
+              \Drupal::logger('easy_breadcrumb')->notice('Easy Breadcrumb could not determine the title to use for @path', ['@path' => $route_match->getRouteObject()->getPath()]);
+            }
+
+            // If the title is to be replaced...
+            if (array_key_exists($title, $replacedTitles)) {
+              // Replaces the title.
+              $title = $replacedTitles[$title];
+            }
           }
           if (!isset($title)) {
 
@@ -207,13 +254,19 @@ class EasyBreadcrumbBuilder implements BreadcrumbBuilderInterface {
               if (!empty($menu_links)) {
                 $menu_link = reset($menu_links);
                 $title = $menu_link->getTitle();
+                if (array_key_exists($title, $replacedTitles)) {
+                  $title = $replacedTitles[$title];
+                }
               }
             }
 
             // Fallback to using the raw path component as the title if the
             // route is missing a _title or _title_callback attribute.
             if (!isset($title)) {
-              $title = str_replace(array('-', '_'), ' ', Unicode::ucfirst(end($path_elements)));
+              $title = str_replace(['-', '_'], ' ', Unicode::ucfirst(end($path_elements)));
+              if (array_key_exists($title, $replacedTitles)) {
+                $title = $replacedTitles[$title];
+              }
             }
           }
 
@@ -225,16 +278,21 @@ class EasyBreadcrumbBuilder implements BreadcrumbBuilderInterface {
           }
           else {
             $url = Url::fromRouteMatch($route_match);
+            if ($this->config->get(EasyBreadcrumbConstants::ABSOLUTE_PATHS)) {
+              $url->setOption('absolute', TRUE);
+            }
             $links[] = new Link($title, $url);
           }
           unset($title);
           $i++;
         }
       }
-      elseif ($this->config->get(EasyBreadcrumbConstants::INCLUDE_INVALID_PATHS)) {
+      elseif ($this->config->get(EasyBreadcrumbConstants::INCLUDE_INVALID_PATHS) && empty($exclude[implode('/', $path_elements)])) {
         // TODO: exclude the 404 page and other's with a system path.
-        $title = str_replace(array('-', '_'), ' ', Unicode::ucfirst(end($path_elements)));
+        $title = str_replace(['-', '_'], ' ', Unicode::ucfirst(end($path_elements)));
+        $this->applyTitleReplacement($title, $replacedTitles);
         $links[] = Link::createFromRoute($title, '<none>');
+        unset($title);
       }
       array_pop($path_elements);
     }
@@ -255,18 +313,37 @@ class EasyBreadcrumbBuilder implements BreadcrumbBuilderInterface {
   }
 
   /**
+   * Apply title replacements.
+   *
+   * @param string $title
+   *   Page title.
+   * @param array $replacements
+   *   Replacement rules map.
+   */
+  public function applyTitleReplacement(&$title, array $replacements) {
+    if (!is_string($title)) {
+
+      return;
+    }
+
+    if (array_key_exists($title, $replacements)) {
+      $title = $replacements[$title];
+    }
+  }
+
+  /**
    * Remove duplicate repeated segments.
    *
-   * @param Link[] $links
+   * @param \Drupal\Core\Link[] $links
    *   The links.
    *
-   * @return Link[]
+   * @return \Drupal\Core\Link[]
    *   The new links.
    */
   protected function removeRepeatedSegments(array $links) {
     $newLinks = [];
 
-    /** @var Link $last */
+    /** @var \Drupal\Core\Link $last */
     $last = NULL;
 
     foreach ($links as $link) {
@@ -294,7 +371,21 @@ class EasyBreadcrumbBuilder implements BreadcrumbBuilderInterface {
   protected function linksAreEqual(Link $link1, Link $link2) {
     $links_equal = TRUE;
 
-    if ($link1->getText() != $link2->getText()) {
+    if ($link1->getText() instanceof TranslatableMarkup) {
+      $link_one_text = (string) $link1->getText();
+    }
+    else {
+      $link_one_text = $link1->getText();
+    }
+
+    if ($link2->getText() instanceof TranslatableMarkup) {
+      $link_two_text = (string) $link2->getText();
+    }
+    else {
+      $link_two_text = $link2->getText();
+    }
+
+    if ($link_one_text != $link_two_text) {
       $links_equal = FALSE;
     }
 

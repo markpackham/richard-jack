@@ -23,6 +23,11 @@ class EasyBreadcrumbConstants {
   const EXCLUDED_PATHS = 'excluded_paths';
 
   /**
+   * List of paths to be excluded from the generated segments.
+   */
+  const REPLACED_TITLES = 'replaced_titles';
+
+  /**
    * Separator between segments.
    */
   const SEGMENTS_SEPARATOR = 'segments_separator';
@@ -36,6 +41,11 @@ class EasyBreadcrumbConstants {
    * Title for the front page segment.
    */
   const HOME_SEGMENT_TITLE = 'home_segment_title';
+
+  /**
+   * Flag for keeping the breadcrumb on the front page.
+   */
+  const HOME_SEGMENT_KEEP = 'home_segment_keep';
 
   /**
    * Flag for including or not the page's title as a segment.
@@ -78,18 +88,35 @@ class EasyBreadcrumbConstants {
   const REMOVE_REPEATED_SEGMENTS = 'remove_repeated_segments';
 
   /**
+   * Flag for storing absolute path settings.
+   */
+  const ABSOLUTE_PATHS = 'absolute_paths';
+
+  /**
    * Default list of excluded paths.
    *
    * @return array
    *   Default list of ignored paths.
    */
   public static function defaultExcludedPaths() {
-    static $default_excluded_paths = array(
+    static $default_excluded_paths = [
       'search',
       'search/node',
-    );
+    ];
 
     return $default_excluded_paths;
+  }
+
+  /**
+   * Default list of replaced titles.
+   *
+   * @return array
+   *   Default list of replaced titles.
+   */
+  public static function defaultReplacedTitles() {
+    static $default_replaced_titles = [];
+
+    return $default_replaced_titles;
   }
 
   /**
@@ -99,7 +126,7 @@ class EasyBreadcrumbConstants {
    *   Default list of ignored words.
    */
   public static function defaultIgnoredWords() {
-    static $default_ignored_words = array(
+    static $default_ignored_words = [
       'of',
       'and',
       'or',
@@ -107,7 +134,7 @@ class EasyBreadcrumbConstants {
       'del',
       'y',
       'o',
-    );
+    ];
 
     return $default_ignored_words;
   }
