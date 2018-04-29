@@ -45,3 +45,10 @@ function image_effects_update_8201() {
     'file_mdm_font',
   ]);
 }
+
+/**
+ * Clear caches to discover new effects.
+ */
+function image_effects_update_8202() {
+  // Empty function.
+}

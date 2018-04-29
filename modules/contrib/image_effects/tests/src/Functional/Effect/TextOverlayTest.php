@@ -34,7 +34,7 @@ class TextOverlayTest extends ImageEffectsTestBase {
   }
 
   /**
-   * Test effect on required toolkits.
+   * Text overlay effect test.
    *
    * @param string $toolkit_id
    *   The id of the toolkit to set up.
@@ -45,16 +45,9 @@ class TextOverlayTest extends ImageEffectsTestBase {
    *
    * @dataProvider providerToolkits
    */
-  public function testOnToolkits($toolkit_id, $toolkit_config, array $toolkit_settings) {
+  public function testTextOverlayEffect($toolkit_id, $toolkit_config, array $toolkit_settings) {
     $this->changeToolkit($toolkit_id, $toolkit_config, $toolkit_settings);
-  }
 
-  /**
-   * Text overlay effect test.
-   *
-   * @depends testOnToolkits
-   */
-  public function testTextOverlayEffect() {
     // Copy the font file to the test path.
     file_unmanaged_copy(drupal_get_path('module', 'image_effects') . '/tests/fonts/LinLibertineTTF_5.3.0_2012_07_02/LinLibertine_Rah.ttf', 'dummy-remote://', FILE_EXISTS_REPLACE);
 

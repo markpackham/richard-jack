@@ -6,5 +6,8 @@
         "drupal/core": ">=8.2.0",
         "drupal/file_mdm_exif": "^1",
         "drupal/file_mdm_font": "^1"
+    },
+    "conflict": {
+        "drupal/imagemagick": "<2.3"
     }
 }

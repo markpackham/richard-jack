@@ -2,6 +2,7 @@
 
 namespace Drupal\Tests\image_effects\Functional;
 
+use Drupal\Core\Database\Database;
 use Drupal\Core\Image\ImageInterface;
 use Drupal\Tests\BrowserTestBase;
 use Drupal\image\Entity\ImageStyle;
@@ -217,7 +218,7 @@ abstract class ImageEffectsTestBase extends BrowserTestBase {
     // GraphicsMagick binaries installed, so the test will be skipped; they can
     // be run locally if binaries are installed.
     if ($toolkit_id === 'imagemagick') {
-      $status = \Drupal::service('image.toolkit.manager')->createInstance('imagemagick')->checkPath('');
+      $status = \Drupal::service('image.toolkit.manager')->createInstance('imagemagick')->getExecManager()->checkPath('');
       if (!empty($status['errors'])) {
         $this->markTestSkipped("Tests for '{$toolkit_settings['binaries']}' cannot run because the binaries are not available on the shell path.");
       }
@@ -320,6 +321,22 @@ abstract class ImageEffectsTestBase extends BrowserTestBase {
     }
 
     return array_values(imagecolorsforindex($toolkit->getResource(), $color_index));
+  }
+
+  /**
+   * Gets the current cache tag invalidations of an image style.
+   *
+   * @param string $image_style_name
+   *   The image style name.
+   *
+   * @return int
+   *   The invalidations value.
+   */
+  protected function getImageStyleCacheTagInvalidations($image_style_name) {
+    $query = Database::getConnection()->select('cachetags', 'a');
+    $query->addField('a', 'invalidations');
+    $query->condition('tag', 'config:image.style.' . $image_style_name);
+    return (int) $query->execute()->fetchColumn();
   }
 
   /**

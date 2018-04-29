@@ -476,3 +476,17 @@ image.effect.image_effects_interlace:
     type:
       type: string
       label: 'Type'
+
+image.effect.image_effects_aspect_switcher:
+  type: mapping
+  label: 'Allows to choose image styles to apply based on orientation (portrait or landscape)'
+  mapping:
+    landscape_image_style:
+      type: string
+      label: 'Image style machine_name for landscape orientation'
+    portrait_image_style:
+      type: string
+      label: 'Image style machine_name for portrait orientation'
+    ratio_adjustment:
+      type: float
+      label: 'This allows you to bend the rules for how different the proportions need to be to trigger the switch'
